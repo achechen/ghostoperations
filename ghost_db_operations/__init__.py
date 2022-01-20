@@ -5,7 +5,7 @@ import requests
 import json
 from datetime import datetime
 import re
-
+import tempfile
 
 def authenticate(username, password, endpoint):
     data = {
@@ -75,9 +75,10 @@ def import_all_posts(session, endpoint, files):
         return "OK", r.json(), "successfully imported all posts"
 
 def write_json(endpoint_name, data):
+    temp_dir = tempfile.gettempdir()
     now = datetime.now().utcnow()
     f_name = now.strftime(
-        '{}_%Y-%m-%d-%H-%M-%S.json'.format(endpoint_name))
+        f'{temp_dir}/{endpoint_name}_%Y-%m-%d-%H-%M-%S.json')
     with open(f_name, 'w') as f:
         json.dump(data, f)
     return f_name
@@ -168,7 +169,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         url = re.compile(r"https?://(www\.)?")
         ghost_url_name = url.sub('', staging_endpoint).strip().strip('/')
         ghost_url_name = ghost_url_name.replace('.', '_')
-        
         filename = write_json(ghost_url_name, json_export)
         logging.info(f'Filename: {filename}')
 
