@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import re
 
+
 def authenticate(username, password, endpoint):
     data = {
         'username': username,
@@ -28,8 +29,7 @@ def authenticate(username, password, endpoint):
         return "OK", session, ""
 
 def delete_all_posts(session, endpoint):
-    url = f'{endpoint}/ghost/api/v3/admin/db/'
-    
+    url = f'{endpoint}/ghost/api/v3/admin/db/'    
     try:
         r = session.delete(
             url=url
@@ -44,8 +44,7 @@ def delete_all_posts(session, endpoint):
         return "OK", "successfully deleted all posts", ""
 
 def export_all_posts(session, endpoint):
-    url = f'{endpoint}/ghost/api/v3/admin/db/'
-    
+    url = f'{endpoint}/ghost/api/v3/admin/db/'    
     try:
         r = session.get(
             url=url
@@ -60,8 +59,7 @@ def export_all_posts(session, endpoint):
         return "OK", r.json(), "successfully exported all posts"
 
 def import_all_posts(session, endpoint, files):
-    url = f'{endpoint}/ghost/api/v3/admin/db/'
-    
+    url = f'{endpoint}/ghost/api/v3/admin/db/'  
     try:
         r = session.post(
             url=url,
@@ -94,7 +92,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     environment = body.get('environment')
     operation = body.get('operation')
-
     prod_endpoint = os.environ['GHOST_PROD_URL']
     prod_username = os.environ['GHOST_PROD_USERNAME']
     prod_password = os.environ['GHOST_PROD_PASSWORD']
@@ -105,8 +102,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if not operation:
         logging.error('Operation was not specified')
         return func.HttpResponse("operation value was not specified", status_code=400)
-
-
 
     # delete
     if operation == 'delete':
@@ -147,7 +142,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             logging.info("Successfully deleted all posts")
             return func.HttpResponse("Successfully deleted all posts", status_code=201)
 
-
+    # move
     if operation == 'move':
         # authenticate with staging
         logging.info(f"Authenticating with {staging_endpoint}")
@@ -187,8 +182,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse(f"{session} {error}", status_code=500)
         else:
             logging.info("Successfully authenticated with prod ghost server")
-
-            
+      
         # import to prod
         logging.info("Importing all posts from staging into production")
         file = open(filename, 'rb')
@@ -202,16 +196,3 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             logging.info(f"Successfully imported all posts.")
             return func.HttpResponse("Successfully moved all posts from staging to prod", status_code=200)
-
-
-    
-
-    
-
-
-
-
-
-
-
-
