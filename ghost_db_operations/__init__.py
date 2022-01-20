@@ -108,7 +108,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if not environment:
             logging.error('Environment was not specified for delete operation')
             return func.HttpResponse("environment value was not specified for delete operation", status_code=400)
-        elif environment != 'prod' or environment != 'staging':
+        elif environment != 'prod' and environment != 'staging':
             logging.error('Wrong environment value was specified. Allowed values: prod, staging')
             return func.HttpResponse("Wrong environment value was specified. Allowed values: prod, staging", status_code=400)
 
